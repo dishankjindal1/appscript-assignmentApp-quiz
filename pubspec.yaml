@@ -19,10 +19,14 @@ dependencies:
   firebase_auth: any
   cloud_firestore: any
 
+  # Google Sign-In
+  google_sign_in: any
+
   # Bloc
   bloc: any
   flutter_bloc: any
   hydrated_bloc: any # state persistence solution
+  path_provider: any # Storage Solution
 
   # Network Call
   dio: any
@@ -30,6 +34,11 @@ dependencies:
   # Class Compare
   equatable: any
   json_annotation: any
+
+  # Logger
+  logger: any
+
+
 
 dev_dependencies:
   build_runner: any

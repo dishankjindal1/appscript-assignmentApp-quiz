@@ -1,10 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:quiz/view/login/login.view.dart';
 
-class ViewView extends StatelessWidget {
-  const ViewView({Key? key}) : super(key: key);
+class ViewMaterialApp extends MaterialApp {
+  ViewMaterialApp({Key? key})
+      : super(
+          key: key,
+          title: 'AppScript AssignmentApp Quiz',
+          debugShowCheckedModeBanner: false,
+          routes: {
+            '/': LoginView.page(),
+            '/quiz': LoginView.page(),
+          },
+          // theme: ViewMaterialApp.lightThemeData,
+        );
 
-  @override
-  Widget build(BuildContext context) {
-    return Container();
-  }
+  static ThemeData lightThemeData = ThemeData.light();
 }

@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:quiz/modal/data/question/question.data.modal.dart';
 import 'package:quiz/modal/utils/exception/exception.utils.modal.dart';
 

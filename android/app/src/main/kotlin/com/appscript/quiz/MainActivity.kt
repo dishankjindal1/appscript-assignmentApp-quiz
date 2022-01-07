@@ -1,4 +1,4 @@
-package com.appscript.quiz.quiz
+package com.appscript.quiz
 
 import io.flutter.embedding.android.FlutterActivity
 
