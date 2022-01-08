@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quiz/view/login/login.view.dart';
+import 'package:quiz/view/quiz/quiz.view.dart';
 
 class ViewMaterialApp extends MaterialApp {
   ViewMaterialApp({Key? key})
@@ -9,7 +10,7 @@ class ViewMaterialApp extends MaterialApp {
           debugShowCheckedModeBanner: false,
           routes: {
             '/': LoginView.page(),
-            '/quiz': LoginView.page(),
+            '/quiz': QuizView.page(),
           },
           // theme: ViewMaterialApp.lightThemeData,
         );

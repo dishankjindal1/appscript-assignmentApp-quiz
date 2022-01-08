@@ -7,16 +7,14 @@ abstract class LoginState extends Equatable {
   List<Object> get props => [];
 }
 
-class LoginInitial extends LoginState {
-  LoginInitial() {
-    FirebaseAuth.instance.signOut();
-  }
-}
+class LoginInitial extends LoginState {}
 
 class LoginSuccess extends LoginState {}
 
-class LoginFailure extends LoginState {}
-
-class LoginLoading extends LoginState {}
-
 class LogoutSuccess extends LoginState {}
+
+class LFailure extends LoginState {}
+
+class LLoading extends LoginState {}
+
+class LComplete extends LoginState {}

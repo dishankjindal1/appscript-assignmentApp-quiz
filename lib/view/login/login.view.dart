@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutterfire_ui/auth.dart';
+import 'package:flutterfire_ui/auth.dart' as fireui;
 import 'package:quiz/view_modal/login/bloc/login_bloc.dart';
 
 class LoginView extends StatelessWidget {
@@ -21,51 +21,77 @@ class LoginView extends StatelessWidget {
         title: const Text('Login'),
       ),
       body: BlocConsumer<LoginBloc, LoginState>(
-        listener: (context, state) {
-          if (state is LoginSuccess) {
-            Navigator.of(context).popAndPushNamed('/quiz');
+        listener: (blocContext, blocState) {
+          if (blocState is LoginSuccess) {
+            Navigator.of(context).pushNamed('/quiz');
           }
         },
-        builder: (context, state) {
-          if (state is LoginInitial) {
-            return Center(
-              child: AuthFlowBuilder<OAuthController>(
-                config: const GoogleProviderConfiguration(
-                    clientId:
-                        '763499512736-2rhn4cjlgaqlr5mj2oknoj9u4ifigfot.apps.googleusercontent.com'),
-                listener: (oldState, newState, controller) {
-                  if (state is SignedIn) {
-                    context.read<LoginBloc>().add(LoginRequestedEvent());
-                  }
-                },
-                builder: (context, state, ctrl, child) {
-                  if (state is SignedIn) {
-                    return const Center(child: Text('Signed In'));
-                  } else if (state is AuthFailed) {
-                    return const Center(child: Text('Failed'));
-                  } else if (state is SigningIn) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else {
-                    return Center(
-                      child: ElevatedButton(
-                          onPressed: () async {
-                            await ctrl
-                                .signInWithProvider(TargetPlatform.android);
-                            context
-                                .read<LoginBloc>()
-                                .add(LoginRequestedEvent());
-                          },
-                          child: Text(
-                              '${FirebaseAuth.instance.currentUser?.displayName ?? 'None'} in BlocConsumer LoginView')),
-                    );
-                  }
-                },
-              ),
-            );
+        builder: (blocContext, blocState) {
+          if (blocState is LoginInitial || blocState is LogoutSuccess) {
+            return _loginProviderScreen(context);
           }
-          return const Center(child: CircularProgressIndicator());
+          if (blocState is LoginSuccess) return _loggedScreen(context);
+          return _circularIndi();
         },
       ),
+    );
+  }
+
+  // Widget _loginInitialScreen(BuildContext context) => Center(
+  //       child: ElevatedButton(
+  //         onPressed: () => context.read<LoginBloc>().add(LoginRequestedEvent()),
+  //         child: const Text('Google Signin'),
+  //       ),
+  //     );
+  Widget _loggedScreen(BuildContext context) => Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: () =>
+                  context.read<LoginBloc>().add(LoginRequestedEvent()),
+              child: const Text('Back To Quiz'),
+            ),
+            ElevatedButton(
+              onPressed: () =>
+                  context.read<LoginBloc>().add(LogoutRequestedEvent()),
+              child: const Text('Sign out'),
+            ),
+          ],
+        ),
+      );
+  Widget _circularIndi() => const Center(child: CircularProgressIndicator());
+
+  Widget _loginProviderScreen(BuildContext context) {
+    return Center(
+      child: fireui.AuthFlowBuilder<fireui.OAuthController>(
+        config: const fireui.GoogleProviderConfiguration(
+            clientId:
+                '763499512736-2rhn4cjlgaqlr5mj2oknoj9u4ifigfot.apps.googleusercontent.com'),
+        auth: FirebaseAuth.instance,
+        listener: (oldState, newState, controller) {
+          if (newState is fireui.SignedIn) {
+            context.read<LoginBloc>().add(LoginRequestedEvent());
+          }
+        },
+        builder: (context, state, ctrl, child) {
+          if (state is fireui.AuthFailed) {
+            return _googleSignInButton(context, state, ctrl);
+          }
+          return _googleSignInButton(context, state, ctrl);
+        },
+        onComplete: (credential) {},
+      ),
+    );
+  }
+
+  Widget _googleSignInButton(BuildContext context, fireui.AuthState state,
+      fireui.OAuthController ctrl) {
+    return ElevatedButton(
+      onPressed: () async {
+        await ctrl.signInWithProvider(TargetPlatform.android);
+      },
+      child: const Text('Google Sign-In'),
     );
   }
 }

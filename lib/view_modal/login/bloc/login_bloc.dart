@@ -6,36 +6,25 @@ part 'login_event.dart';
 part 'login_state.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
-  LoginBloc() : super(LoginInitial()) {
+  LoginBloc()
+      : super(FirebaseAuth.instance.currentUser == null
+            ? LoginInitial()
+            : LoginSuccess()) {
     on<LoginRequestedEvent>(_loginRequested);
     on<LogoutRequestedEvent>(_logoutRequested);
   }
-  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-  _loginRequested(LoginRequestedEvent event, Emitter<LoginState> emit) {
-    emit(LoginLoading());
-
-    try {
-      if (_firebaseAuth.currentUser != null) {
-        emit(LoginSuccess());
-      } else {
-        emit(LoginFailure());
-      }
-    } catch (e) {
-      emit(LoginInitial());
-    }
+  _loginRequested(LoginRequestedEvent event, Emitter<LoginState> emit) async {
+    emit(LLoading());
+    await Future.delayed(const Duration(seconds: 1));
+    emit(LoginSuccess());
   }
 
-  _logoutRequested(LogoutRequestedEvent event, Emitter<LoginState> emit) {
-    emit(LoginLoading());
+  _logoutRequested(LogoutRequestedEvent event, Emitter<LoginState> emit) async {
+    emit(LLoading());
 
-    try {
-      if (_firebaseAuth.currentUser == null) {
-        emit(LogoutSuccess());
-      } else {
-        emit(LoginFailure());
-      }
-    } catch (e) {
-      emit(LoginInitial());
-    }
+    await FirebaseAuth.instance.signOut();
+    await Future.delayed(const Duration(seconds: 1));
+
+    emit(LogoutSuccess());
   }
 }
