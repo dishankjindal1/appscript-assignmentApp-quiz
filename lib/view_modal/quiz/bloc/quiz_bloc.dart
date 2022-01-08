@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/material.dart';
 import 'package:quiz/modal/data/data.dart';
 
 part 'quiz_event.dart';
@@ -20,11 +19,12 @@ class QuizBloc extends Bloc<QuizEvent, QuizState> {
 
     list = list
         .map((e) => QuestionDataModal(
-            question: utf8.decode(base64.decode(e.question)),
-            answer: utf8.decode(base64.decode(e.answer))))
+              question: utf8.decode(base64.decode(e.question)),
+              answer: utf8.decode(base64.decode(e.answer)),
+              options:
+                  e.options.map((q) => utf8.decode(base64.decode(q))).toList(),
+            ))
         .toList();
-    debugPrint(list.toString());
-
     emit(QuizInitialComplete(list));
   }
 }

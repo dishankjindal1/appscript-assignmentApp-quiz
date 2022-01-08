@@ -12,6 +12,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
             : LoginSuccess()) {
     on<LoginRequestedEvent>(_loginRequested);
     on<LogoutRequestedEvent>(_logoutRequested);
+    on<LoginScoreRequestedEvent>(_loginScoreRequested);
   }
   _loginRequested(LoginRequestedEvent event, Emitter<LoginState> emit) async {
     emit(LLoading());
@@ -26,5 +27,12 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     await Future.delayed(const Duration(seconds: 1));
 
     emit(LogoutSuccess());
+  }
+
+  _loginScoreRequested(
+      LoginScoreRequestedEvent event, Emitter<LoginState> emit) async {
+    emit(LLoading());
+    var finalScore = event.data['score'] as int;
+    emit(LoginSuccessScore(finalScore));
   }
 }

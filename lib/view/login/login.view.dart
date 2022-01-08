@@ -23,7 +23,8 @@ class LoginView extends StatelessWidget {
       body: BlocConsumer<LoginBloc, LoginState>(
         listener: (blocContext, blocState) {
           if (blocState is LoginSuccess) {
-            Navigator.of(context).pushNamed('/quiz');
+            var score = Navigator.of(context).pushNamed('/quiz');
+            _getPopData(score, context);
           }
         },
         builder: (blocContext, blocState) {
@@ -31,10 +32,21 @@ class LoginView extends StatelessWidget {
             return _loginProviderScreen(context);
           }
           if (blocState is LoginSuccess) return _loggedScreen(context);
+
+          if (blocState is LoginSuccessScore) {
+            return _loggedScreen(context, score: blocState.score);
+          }
+
           return _circularIndi();
         },
       ),
     );
+  }
+
+  _getPopData(Future<dynamic> data, BuildContext cont) async {
+    Map<String, dynamic> scoreObject = await data;
+    // debugPrint(scoreObject['score'].toString());
+    cont.read<LoginBloc>().add(LoginScoreRequestedEvent(scoreObject));
   }
 
   // Widget _loginInitialScreen(BuildContext context) => Center(
@@ -43,10 +55,14 @@ class LoginView extends StatelessWidget {
   //         child: const Text('Google Signin'),
   //       ),
   //     );
-  Widget _loggedScreen(BuildContext context) => Center(
+  Widget _loggedScreen(BuildContext context, {int score = 0}) => Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            const Spacer(),
+            // if score has some value then show score
+            score != 0 ? Text('Your total score is $score') : const SizedBox(),
+            const Spacer(),
             ElevatedButton(
               onPressed: () =>
                   context.read<LoginBloc>().add(LoginRequestedEvent()),
@@ -57,6 +73,7 @@ class LoginView extends StatelessWidget {
                   context.read<LoginBloc>().add(LogoutRequestedEvent()),
               child: const Text('Sign out'),
             ),
+            const Spacer(),
           ],
         ),
       );

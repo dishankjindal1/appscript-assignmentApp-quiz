@@ -9,4 +9,9 @@ abstract class LoginEvent extends Equatable {
 
 class LoginRequestedEvent extends LoginEvent {}
 
+class LoginScoreRequestedEvent extends LoginEvent {
+  final Map<String, dynamic> data;
+  const LoginScoreRequestedEvent(this.data);
+}
+
 class LogoutRequestedEvent extends LoginEvent {}

@@ -12,8 +12,8 @@ class QuizStartRequested extends QuizEvent {
   const QuizStartRequested(this.listOfQuestion);
 }
 
-class QuizIsFinished extends QuizEvent {
-  final int current;
-  final int end;
-  const QuizIsFinished({required this.current, required this.end});
-}
+// class QuizIsFinished extends QuizEvent {
+//   final int current;
+//   final int end;
+//   const QuizIsFinished({required this.current, required this.end});
+// }

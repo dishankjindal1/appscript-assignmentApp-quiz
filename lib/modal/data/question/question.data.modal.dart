@@ -5,19 +5,20 @@ part 'question.data.modal.g.dart';
 
 @JsonSerializable()
 class QuestionDataModal extends Equatable {
-
-
   final String question;
   @JsonKey(name: 'correct_answer')
   final String answer;
+  @JsonKey(name: 'incorrect_answers')
+  final List<String> options;
 
   const QuestionDataModal({
     required this.question,
     required this.answer,
+    required this.options,
   });
 
-
-  factory QuestionDataModal.fromJson(Map<String, dynamic> json) => _$QuestionDataModalFromJson(json);
+  factory QuestionDataModal.fromJson(Map<String, dynamic> json) =>
+      _$QuestionDataModalFromJson(json);
 
   Map<String, dynamic> toJson() => _$QuestionDataModalToJson(this);
 
