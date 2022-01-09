@@ -44,7 +44,7 @@ class _CustomProgressBarState extends State<CustomProgressBar>
   void didUpdateWidget(covariant CustomProgressBar oldWidget) {
     super.didUpdateWidget(oldWidget);
     setState(() {
-      progressPercentage += 10;
+      progressPercentage = (_animation.value * 100).ceil();
     });
   }
 
