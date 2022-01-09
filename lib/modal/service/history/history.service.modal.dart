@@ -11,8 +11,11 @@ class HistoryServiceModal {
 
     final historyRef = getCollection(uid);
 
-    var queryHistoryList =
-        await historyRef.orderBy('timestamp', descending: true).limitToLast(5).get().then((value) => value.docs);
+    var queryHistoryList = await historyRef
+        .orderBy('timestamp', descending: true)
+        .limit(5)
+        .get()
+        .then((value) => value.docs);
 
     List<HistoryDataModal> historyList = [];
 

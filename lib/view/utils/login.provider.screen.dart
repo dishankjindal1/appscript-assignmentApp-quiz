@@ -27,6 +27,9 @@ class LoginScreenProvider extends StatelessWidget {
             const Center(child: CircularProgressIndicator());
           }
           return ElevatedButton(
+            style: ButtonStyle(
+                minimumSize:
+                    MaterialStateProperty.all<Size>(const Size(100, 50))),
             onPressed: () async {
               await ctrl.signInWithProvider(TargetPlatform.android);
             },

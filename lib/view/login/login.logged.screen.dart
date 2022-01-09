@@ -17,18 +17,29 @@ class LoginLoggedScreen extends StatelessWidget {
           const Spacer(),
           // if score has some value then show score
           score >= 0 ? Text('Your total score is $score') : const SizedBox(),
-          const Spacer(),
-          ElevatedButton(
-            onPressed: () =>
-                context.read<LoginBloc>().add(LoginRequestedEvent()),
-            child: const Text('Start Quiz'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              context.read<LoginBloc>().add(LogoutRequestedEvent());
-              context.read<HistoryBloc>().add(HistoryClearRequested());
-            },
-            child: const Text('Sign out'),
+          const SizedBox(height: 50),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              ElevatedButton(
+                style: ButtonStyle(
+                    minimumSize:
+                        MaterialStateProperty.all<Size>(const Size(100, 50))),
+                onPressed: () =>
+                    context.read<LoginBloc>().add(LoginRequestedEvent()),
+                child: const Text('Start Quiz'),
+              ),
+              ElevatedButton(
+                style: ButtonStyle(
+                    minimumSize:
+                        MaterialStateProperty.all<Size>(const Size(100, 50))),
+                onPressed: () {
+                  context.read<LoginBloc>().add(LogoutRequestedEvent());
+                  context.read<HistoryBloc>().add(HistoryClearRequested());
+                },
+                child: const Text('Sign out'),
+              ),
+            ],
           ),
           const Spacer(),
         ],

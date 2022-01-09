@@ -18,56 +18,58 @@ class _ScoreBoardWidgetState extends State<ScoreBoardWidget> {
     return BlocBuilder<HistoryBloc, HistoryState>(
       builder: (historyCtx, historyState) {
         if (historyState is HistoryData) {
-          return RefreshIndicator(
-            onRefresh: () async {
-              var historyList =
-                  await RepositoryProvider.of<CentralRepository>(context)
-                      .getHistoryList();
-              context
-                  .read<HistoryBloc>()
-                  .add(HistoryDataRequested(historyList));
-              await Future.delayed(const Duration(seconds: 1));
-              setState(() {});
-            },
-            child: ListView.builder(
-              itemCount: historyState.list.length + 1,
-              itemBuilder: (context, index) {
-                if (historyState.list.isEmpty) {
-                  return const FakeWidget();
-                }
-                // Work Around for adding header on the to of list
-                // Must decrement index by 1 index--
-                if (index == 0) {
-                  return ListTile(
-                    tileColor: Colors.amber[300],
-                    title: const Text(
-                      'Your Scores',
-                      textAlign: TextAlign.center,
+          return SingleChildScrollView(
+            child: Column(
+              children: [
+                ListTile(
+                  tileColor: Colors.amber[300],
+                  title: const Text(
+                    'Your Scores',
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                RefreshIndicator(
+                  onRefresh: () async {
+                    var historyList =
+                        await RepositoryProvider.of<CentralRepository>(context)
+                            .getHistoryList();
+                    context
+                        .read<HistoryBloc>()
+                        .add(HistoryDataRequested(historyList));
+                    await Future.delayed(const Duration(seconds: 1));
+                    // setState(() {});
+                  },
+                  child: SizedBox(
+                    height: 500,
+                    child: ListView.builder(
+                      itemCount: historyState.list.length,
+                      itemBuilder: (context, index) {
+                        var data = historyState.list.elementAt(index);
+                        var day = DateTime.parse(data.timestamp);
+                        var time = TimeOfDay.fromDateTime(
+                            DateTime.parse(data.timestamp));
+
+                        if (index.isEven) {
+                          return ListTile(
+                            tileColor: index == 0
+                                ? Colors.green[200]
+                                : Colors.transparent,
+                            leading: const Icon(Icons.score),
+                            title: Text('You Scored ${data.score}'),
+                            subtitle: dateTimeWidget(day, time),
+                          );
+                        } else {
+                          return ListTile(
+                            leading: const Icon(Icons.score),
+                            title: Text('You Scored ${data.score}'),
+                            subtitle: dateTimeWidget(day, time),
+                          );
+                        }
+                      },
                     ),
-                  );
-                }
-                index--;
-
-                var data = historyState.list.elementAt(index);
-                var day = DateTime.parse(data.timestamp);
-                var time =
-                    TimeOfDay.fromDateTime(DateTime.parse(data.timestamp));
-
-                if (index.isEven) {
-                  return ListTile(
-                    leading: const Icon(Icons.score),
-                    title: Text('You Scored ${data.score}'),
-                    subtitle: dateTimeWidget(day, time),
-                  );
-                } else {
-                  return ListTile(
-                    tileColor: Colors.grey[300],
-                    leading: const Icon(Icons.score),
-                    title: Text('You Scored ${data.score}'),
-                    subtitle: dateTimeWidget(day, time),
-                  );
-                }
-              },
+                  ),
+                ),
+              ],
             ),
           );
         } else {

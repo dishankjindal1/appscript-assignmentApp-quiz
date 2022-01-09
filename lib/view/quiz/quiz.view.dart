@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:quiz/modal/repository.dart';
+import 'package:quiz/view/utils/ciruular.indicator.widget.dart';
 import 'package:quiz/view/utils/custom.progress.bar.dart';
 import 'package:quiz/view_modal/progress/bloc/progress_bloc.dart';
 import 'package:quiz/view_modal/quiz/bloc/quiz_bloc.dart';
@@ -37,6 +39,8 @@ class _QuizViewState extends State<QuizView> {
 
   Map<String, dynamic> quizAnswer = {};
 
+  bool disableSubmitButton = false;
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -44,23 +48,12 @@ class _QuizViewState extends State<QuizView> {
         return true;
       },
       child: Scaffold(
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // _progressConsumer(context),
-            CustomProgressBar(
-                (AnimationController ctrl) => animationCtrl = ctrl),
-            const SizedBox(height: 25),
-            _blocConsumer(
-              context,
-            ),
-          ],
-        ),
+        body: _blocConsumer(),
       ),
     );
   }
 
-  _blocConsumer(BuildContext context) {
+  _blocConsumer() {
     var deviceSize = MediaQuery.of(context).size;
     return BlocBuilder<QuizBloc, QuizState>(
       builder: (context, state) {
@@ -70,14 +63,15 @@ class _QuizViewState extends State<QuizView> {
             child: FormBuilder(
               key: _formKey,
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  CustomProgressBar(
+                      (AnimationController ctrl) => animationCtrl = ctrl),
+                  const SizedBox(height: 25),
                   SizedBox(
                     width: deviceSize.width,
                     height: deviceSize.width,
                     child: PageView.builder(
-                      pageSnapping: false,
-                      padEnds: false,
                       physics: const NeverScrollableScrollPhysics(),
                       controller: _pageController,
                       itemCount: 10,
@@ -97,6 +91,8 @@ class _QuizViewState extends State<QuizView> {
                                 width: deviceSize.width,
                                 height: 250,
                                 child: FormBuilderRadioGroup<String>(
+                                    focusNode:
+                                        FocusNode(canRequestFocus: false),
                                     key: Key('formvalue@$index'),
                                     name: 'formvalue@$index',
                                     initialValue: state.list[index].options[1],
@@ -123,43 +119,55 @@ class _QuizViewState extends State<QuizView> {
                       },
                     ),
                   ),
+                  const SizedBox(height: 25),
                   Center(
                     child: ElevatedButton(
-                      onPressed: () {
-                        // Page is Starting from 0 to 9 total 10 questions
-                        var page = _pageController.page?.round() ?? 1;
+                      style: ButtonStyle(minimumSize: MaterialStateProperty.all<Size>(const Size(100,50))),
+                      onPressed: !disableSubmitButton
+                          ? () {
+                              // Page is Starting from 0 to 9 total 10 questions
+                              var page = _pageController.page?.round() ?? 1;
 
-                        setState(() {
-                          animationCtrl.animateTo((page + 1) / 10);
-                        });
+                              setState(() {
+                                animationCtrl.animateTo((page + 1) / 10);
+                                disableSubmitButton = true;
+                              });
 
-                        _formKey.currentState?.save();
-                        debugPrint(_formKey.currentState?.value.toString());
-                        quizAnswer.addAll(_formKey.currentState!.value);
+                              _formKey.currentState?.save();
+                              debugPrint(
+                                  _formKey.currentState?.value.toString());
+                              quizAnswer.addAll(_formKey.currentState!.value);
 
-                        _pageController.nextPage(
-                          duration: const Duration(milliseconds: 500),
-                          curve: Curves.easeIn,
-                        );
-                        if (page >= 9) {
-                          debugPrint(quizAnswer.toString());
-                          var count = 0;
-                          var index = 0;
-                          quizAnswer.forEach((key, value) {
-                            debugPrint(value + ' ' + state.list[index].answer);
+                              _pageController.nextPage(
+                                duration: const Duration(milliseconds: 500),
+                                curve: Curves.easeIn,
+                              );
+                              if (page >= 9) {
+                                debugPrint(quizAnswer.toString());
+                                var count = 0;
+                                var index = 0;
+                                quizAnswer.forEach((key, value) {
+                                  debugPrint(
+                                      value + ' ' + state.list[index].answer);
 
-                            if (value == state.list[index].answer) {
-                              count += 10;
+                                  if (value == state.list[index].answer) {
+                                    count += 10;
+                                  }
+                                  index++;
+                                });
+                                Navigator.pop<Map<String, dynamic>>(
+                                    context, {'score': count});
+                              }
+                              _disableSubmitFn();
                             }
-                            index++;
-                          });
-                          Navigator.pop<Map<String, dynamic>>(
-                              context, {'score': count});
-                        }
-                      },
-                      child: const Text('submit & next'),
+                          : null,
+                      child: !disableSubmitButton
+                          ? const Text('submit & next')
+                          : const CircularProgressIndicator(
+                              color: Colors.white,
+                            ),
                     ),
-                  ),
+                  )
                 ],
               ),
             ),
@@ -171,9 +179,7 @@ class _QuizViewState extends State<QuizView> {
                   .getQuestionList();
           context.read<QuizBloc>().add(QuizStartRequested(repoListOfQuestions));
 
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
+          return const CenteredCircularIndicator();
         }
         return Center(
           child: Text('Unknown $state'),
@@ -182,6 +188,19 @@ class _QuizViewState extends State<QuizView> {
     );
   }
 
+  _disableSubmitFn() {
+    Timer.periodic(const Duration(seconds: 1), (timer) {
+      debugPrint('Timer : ' + timer.tick.toString());
+      if (timer.tick == 1) {
+        setState(() {
+          disableSubmitButton = false;
+          timer.cancel();
+        });
+      }
+    });
+  }
+
+  // Using onChnage for a workaround a glitch // Focus node
   _changedRadio(String? value) {
     var current = _pageController.page?.round() ?? 1;
     _pageController.jumpToPage(current);
