@@ -16,11 +16,11 @@ class CentralRepository {
         .getList(FirebaseAuth.instance.currentUser?.uid ?? '123');
   }
 
-  uploadScores(String score) {
+  Future<void> uploadScores(String score) async {
     var uuid = FirebaseAuth.instance.currentUser?.uid;
 
     if (uuid != null && int.parse(score) >= 0) {
-      _historyServiceModal.uploadScore(uuid, score);
+      await _historyServiceModal.uploadScore(uuid, score);
     } else if (uuid == null) {
       throw FirebaseUserNotFoundException('uid is null');
     } else if (int.parse(score) < 0) {

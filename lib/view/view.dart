@@ -12,7 +12,7 @@ class ViewMaterialApp extends MaterialApp {
             '/': LoginView.page(),
             '/quiz': QuizView.page(),
           },
-          // theme: ViewMaterialApp.lightThemeData,
+          theme: ViewMaterialApp.lightThemeData,
         );
 
   static ThemeData lightThemeData = ThemeData.light();

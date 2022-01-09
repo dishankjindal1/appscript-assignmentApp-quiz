@@ -15,13 +15,11 @@ class _CustomProgressBarState extends State<CustomProgressBar>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
-
-  late AnimationCallBackFunc _animateProgress;
+  int progressPercentage = 0;
 
   @override
   void initState() {
     super.initState();
-    _animateProgress = widget.animateProgress;
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 5),
@@ -32,7 +30,7 @@ class _CustomProgressBarState extends State<CustomProgressBar>
       parent: _controller,
       curve: const Interval(0.0, 1.0, curve: Curves.linear),
     );
-    _animateProgress(_controller);
+    widget.animateProgress(_controller);
   }
 
   @override
@@ -43,16 +41,35 @@ class _CustomProgressBarState extends State<CustomProgressBar>
   }
 
   @override
+  void didUpdateWidget(covariant CustomProgressBar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    setState(() {
+      progressPercentage += 10;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _animation,
-      builder: (context, widget) {
-        return Center(
-          child: LinearProgressIndicator(
-            value: _animation.value,
+    return Column(
+      children: [
+        Align(
+            alignment: const Alignment(0, 0),
+            child: Text(
+              '$progressPercentage %',
+              style: const TextStyle(fontSize: 24),
+            )),
+        const SizedBox(height: 25),
+        Center(
+          child: AnimatedBuilder(
+            animation: _animation,
+            builder: (context, widget) {
+              return LinearProgressIndicator(
+                value: _animation.value,
+              );
+            },
           ),
-        );
-      },
+        ),
+      ],
     );
   }
 }

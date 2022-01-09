@@ -20,8 +20,8 @@ void main() {
 
     
     test('upload data to firestore', () async {
-      when(()=>historyService?.uploadScore('123','50')).thenReturn('done');
-      expect(historyService?.uploadScore('123','50'), 'done');
+      when(()=>historyService?.uploadScore('123','50')).thenAnswer((_) async => await Future.value());
+      await expectLater( historyService?.uploadScore('123','50'), isA<void>());
     });
   });
 }

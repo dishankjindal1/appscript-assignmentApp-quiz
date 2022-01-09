@@ -9,15 +9,18 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   LoginBloc()
       : super(FirebaseAuth.instance.currentUser == null
             ? LoginInitial()
-            : LoginSuccess()) {
+            : LoginSuccess(
+                FirebaseAuth.instance.currentUser?.displayName ?? 'Error')) {
     on<LoginRequestedEvent>(_loginRequested);
     on<LogoutRequestedEvent>(_logoutRequested);
     on<LoginScoreRequestedEvent>(_loginScoreRequested);
   }
   _loginRequested(LoginRequestedEvent event, Emitter<LoginState> emit) async {
     emit(LLoading());
+    var userName =
+        FirebaseAuth.instance.currentUser?.displayName ?? 'Error in username';
     await Future.delayed(const Duration(seconds: 1));
-    emit(LoginSuccess());
+    emit(LoginSuccess(userName));
   }
 
   _logoutRequested(LogoutRequestedEvent event, Emitter<LoginState> emit) async {
@@ -32,7 +35,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   _loginScoreRequested(
       LoginScoreRequestedEvent event, Emitter<LoginState> emit) async {
     emit(LLoading());
-    var finalScore = event.data['score'] as int;
+    var finalScore = event.score;
     emit(LoginSuccessScore(finalScore));
   }
 }

@@ -14,4 +14,10 @@ class MainBlocObserver extends BlocObserver {
     super.onError(bloc, error, stackTrace);
     logger.e('Change on ${bloc.runtimeType}\n$error\n$stackTrace');
   }
+
+  @override
+  void onEvent(Bloc bloc, Object? event) {
+    super.onEvent(bloc, event);
+    logger.i('Event on ${bloc.runtimeType}\n$event');
+  }
 }

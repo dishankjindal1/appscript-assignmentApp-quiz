@@ -12,7 +12,7 @@ class HistoryServiceModal {
     final historyRef = getCollection(uid);
 
     var queryHistoryList =
-        await historyRef.orderBy('timestamp').get().then((value) => value.docs);
+        await historyRef.orderBy('timestamp', descending: true).limitToLast(5).get().then((value) => value.docs);
 
     List<HistoryDataModal> historyList = [];
 
@@ -25,12 +25,12 @@ class HistoryServiceModal {
     return historyList;
   }
 
-  uploadScore(String uid, String score) {
+  Future<void> uploadScore(String uid, String score) async {
     _logger.i('uploadScore called');
     var timestamp = Timestamp.now().toDate().toIso8601String();
 
     final historyRef = getCollection(uid);
-    historyRef
+    await historyRef
         .add(
           HistoryDataModal(score: score, timestamp: timestamp),
         )

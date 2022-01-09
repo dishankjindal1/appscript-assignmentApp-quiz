@@ -9,7 +9,10 @@ abstract class LoginState extends Equatable {
 
 class LoginInitial extends LoginState {}
 
-class LoginSuccess extends LoginState {}
+class LoginSuccess extends LoginState {
+  final String userName;
+  const LoginSuccess(this.userName);
+}
 
 class LoginSuccessScore extends LoginState {
   final int score;

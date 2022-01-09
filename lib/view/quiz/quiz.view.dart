@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
@@ -10,6 +9,8 @@ import 'package:quiz/view_modal/quiz/bloc/quiz_bloc.dart';
 
 typedef AnimationCallBackFunc = void Function(AnimationController);
 
+// Becuase of animations and controllers
+// We are using stateful widgets
 class QuizView extends StatefulWidget {
   const QuizView({Key? key}) : super(key: key);
 
@@ -38,21 +39,23 @@ class _QuizViewState extends State<QuizView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text('Quiz ${FirebaseAuth.instance.currentUser!.displayName}'),
-      ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          // _progressConsumer(context),
-          CustomProgressBar((AnimationController ctrl) => animationCtrl = ctrl),
-          const SizedBox(height: 25),
-          _blocConsumer(
-            context,
-          ),
-        ],
+    return WillPopScope(
+      onWillPop: () async {
+        return true;
+      },
+      child: Scaffold(
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // _progressConsumer(context),
+            CustomProgressBar(
+                (AnimationController ctrl) => animationCtrl = ctrl),
+            const SizedBox(height: 25),
+            _blocConsumer(
+              context,
+            ),
+          ],
+        ),
       ),
     );
   }
