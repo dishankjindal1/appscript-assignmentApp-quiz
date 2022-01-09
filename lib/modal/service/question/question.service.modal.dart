@@ -6,7 +6,7 @@ const String serverUrl =
     'https://opentdb.com/api.php?amount=10&category=27&type=multiple&encode=base64';
 
 class QuestionServiceModal {
-  Future<List<QuestionDataModal>> getListOfQuestion() async {
+  Future<List<QuestionDataModal>> getList() async {
     var dio = Dio();
     try {
       var res = await dio.get(serverUrl);

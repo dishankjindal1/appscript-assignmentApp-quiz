@@ -12,7 +12,22 @@ abstract class BaseException implements Exception {
 
 class ResponseStatusException extends BaseException {
   ResponseStatusException(String? message)
-      : super("Error Response from Server", message);
+      : super("Error Response from Server :", message);
+}
+
+class FireStoreScoreUploadException extends BaseException {
+  FireStoreScoreUploadException(String? message)
+      : super("Firestore Error :", message);
+}
+
+class FirebaseUserNotFoundException extends BaseException {
+  FirebaseUserNotFoundException(String? message)
+      : super('Firebase User not found Error :', message);
+}
+
+class InvalidScoreException extends BaseException {
+  InvalidScoreException(String? message) : super('Invalid Score Exception :', message);
+
 }
 
 class UnknownHttpException extends BaseException {

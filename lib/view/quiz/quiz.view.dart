@@ -34,6 +34,8 @@ class _QuizViewState extends State<QuizView> {
 
   late AnimationController animationCtrl;
 
+  Map<String, dynamic> quizAnswer = {};
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,8 +47,7 @@ class _QuizViewState extends State<QuizView> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           // _progressConsumer(context),
-          CustomProgressBar(
-              (AnimationController ctrl) => animationCtrl = ctrl),
+          CustomProgressBar((AnimationController ctrl) => animationCtrl = ctrl),
           const SizedBox(height: 25),
           _blocConsumer(
             context,
@@ -56,10 +57,7 @@ class _QuizViewState extends State<QuizView> {
     );
   }
 
-
   _blocConsumer(BuildContext context) {
-    Map<String, dynamic> quizAnswer = {};
-
     var deviceSize = MediaQuery.of(context).size;
     return BlocBuilder<QuizBloc, QuizState>(
       builder: (context, state) {
@@ -129,7 +127,7 @@ class _QuizViewState extends State<QuizView> {
                         var page = _pageController.page?.round() ?? 1;
 
                         setState(() {
-                          animationCtrl.animateTo((page+1)/10);
+                          animationCtrl.animateTo((page + 1) / 10);
                         });
 
                         _formKey.currentState?.save();
@@ -145,14 +143,15 @@ class _QuizViewState extends State<QuizView> {
                           var count = 0;
                           var index = 0;
                           quizAnswer.forEach((key, value) {
+                            debugPrint(value + ' ' + state.list[index].answer);
+
                             if (value == state.list[index].answer) {
                               count += 10;
                             }
                             index++;
                           });
-
                           Navigator.pop<Map<String, dynamic>>(
-                              context, {'result': true, 'score': count});
+                              context, {'score': count});
                         }
                       },
                       child: const Text('submit & next'),
@@ -165,7 +164,8 @@ class _QuizViewState extends State<QuizView> {
         }
         if (state is QuizLoading) {
           var repoListOfQuestions =
-              RepositoryProvider.of<CentralRepository>(context).getList();
+              RepositoryProvider.of<CentralRepository>(context)
+                  .getQuestionList();
           context.read<QuizBloc>().add(QuizStartRequested(repoListOfQuestions));
 
           return const Center(

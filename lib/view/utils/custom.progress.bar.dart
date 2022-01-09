@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 
 typedef AnimationCallBackFunc = void Function(AnimationController);
+
 class CustomProgressBar extends StatefulWidget {
   const CustomProgressBar(this.animateProgress, {Key? key}) : super(key: key);
 
   final AnimationCallBackFunc animateProgress;
-
-
 
   @override
   _CustomProgressBarState createState() => _CustomProgressBarState();
@@ -38,8 +37,9 @@ class _CustomProgressBarState extends State<CustomProgressBar>
 
   @override
   void dispose() {
-    super.dispose();
+    // Order of Dispose matters
     _controller.dispose();
+    super.dispose();
   }
 
   @override

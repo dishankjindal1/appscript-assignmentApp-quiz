@@ -16,9 +16,9 @@ void main() {
     });
 
     test('getListOfQuestion method', () async {
-      when(() => fakeQuestionServiceModal!.getListOfQuestion()).thenAnswer((_) async =>
+      when(() => fakeQuestionServiceModal!.getList()).thenAnswer((_) async =>
           await Future.value(<MockQuestionDataModal>[]));
-      expect(await fakeQuestionServiceModal!.getListOfQuestion(), isA<List<MockQuestionDataModal>>());
+      expect(await fakeQuestionServiceModal!.getList(), isA<List<MockQuestionDataModal>>());
     });
   });
 }
