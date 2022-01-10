@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/auth.dart';
 import 'package:quiz/view/utils/utils.dart';
 
-
 class LoginScreenProvider extends StatelessWidget {
   const LoginScreenProvider(this.authStateChangeAction, {Key? key})
       : super(key: key);
@@ -15,11 +14,15 @@ class LoginScreenProvider extends StatelessWidget {
     return SignInScreen(
       auth: FirebaseAuth.instance,
       providerConfigs: const [
+        EmailProviderConfiguration(),
         GoogleProviderConfiguration(
             clientId:
-                '763499512736-2rhn4cjlgaqlr5mj2oknoj9u4ifigfot.apps.googleusercontent.com')
+                '763499512736-2rhn4cjlgaqlr5mj2oknoj9u4ifigfot.apps.googleusercontent.com'),
+        AppleProviderConfiguration(),
       ],
-      actions: [AuthStateChangeAction(authStateChangeAction),],
+      actions: [
+        AuthStateChangeAction(authStateChangeAction),
+      ],
     );
     // return Center(
     //   child: AuthFlowBuilder<OAuthController>(
