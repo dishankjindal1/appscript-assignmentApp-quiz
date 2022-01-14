@@ -28,24 +28,22 @@ class _CustomProgressBarState extends State<CustomProgressBar>
 
     _animation = CurvedAnimation(
       parent: _controller,
-      curve: const Interval(0.0, 1.0, curve: Curves.linear),
+      curve: const Interval(0.00, 1.00, curve: Curves.linear),
     );
     widget.animateProgress(_controller);
+    _animation.addListener(() {
+      setState(() {
+        progressPercentage = (_animation.value * 100).toInt();
+      });
+    });
   }
 
   @override
   void dispose() {
     // Order of Dispose matters
     _controller.dispose();
+    _animation.removeListener(() {});
     super.dispose();
-  }
-
-  @override
-  void didUpdateWidget(covariant CustomProgressBar oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    setState(() {
-      progressPercentage = (_animation.value * 100).ceil();
-    });
   }
 
   @override

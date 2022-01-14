@@ -2,13 +2,16 @@ import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:quiz/modal/data/data.dart';
+import 'package:quiz/modal/repository.dart';
 
 part 'quiz_event.dart';
 part 'quiz_state.dart';
 
 class QuizBloc extends Bloc<QuizEvent, QuizState> {
-  QuizBloc() : super(QuizLoading()) {
+
+final CentralRepository _centralRepository;
+
+  QuizBloc(this._centralRepository) : super(QuizLoading()) {
     on<QuizStartRequested>(_quizStart);
   }
 

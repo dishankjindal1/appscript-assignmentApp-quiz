@@ -2,10 +2,11 @@ import 'package:dio/dio.dart';
 import 'package:quiz/modal/data/question/question.data.modal.dart';
 import 'package:quiz/modal/utils/exception/exception.utils.modal.dart';
 
-const String serverUrl =
-    'https://opentdb.com/api.php?amount=10&category=27&type=multiple&encode=base64';
-
 class QuestionServiceModal {
+  late final String serverUrl;
+
+  QuestionServiceModal(this.serverUrl);
+
   Future<List<QuestionDataModal>> getList() async {
     var dio = Dio();
     try {

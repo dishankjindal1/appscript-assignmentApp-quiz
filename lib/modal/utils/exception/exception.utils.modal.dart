@@ -26,11 +26,16 @@ class FirebaseUserNotFoundException extends BaseException {
 }
 
 class InvalidScoreException extends BaseException {
-  InvalidScoreException(String? message) : super('Invalid Score Exception :', message);
-
+  InvalidScoreException(String? message)
+      : super('Invalid Score Exception :', message);
 }
 
 class UnknownHttpException extends BaseException {
   UnknownHttpException(String? message)
       : super('Unknown Server Error', message);
+}
+
+class InvalidServerUrlException extends BaseException {
+  InvalidServerUrlException()
+      : super("Invalid Server Url :-", "Please provide correct url");
 }

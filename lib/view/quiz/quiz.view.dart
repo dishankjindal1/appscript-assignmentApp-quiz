@@ -17,9 +17,13 @@ class QuizView extends StatefulWidget {
   const QuizView({Key? key}) : super(key: key);
 
   static WidgetBuilder page() {
+    getCentralRepo(BuildContext buildCtx) =>
+        RepositoryProvider.of<CentralRepository>(buildCtx);
+
     return (context) => MultiBlocProvider(
           providers: [
-            BlocProvider<QuizBloc>(create: (_) => QuizBloc()),
+            BlocProvider<QuizBloc>(
+                create: (_) => QuizBloc(getCentralRepo(context))),
             BlocProvider<ProgressBloc>(create: (_) => ProgressBloc()),
           ],
           child: const QuizView(),
@@ -121,13 +125,17 @@ class _QuizViewState extends State<QuizView> {
                   ),
                   const SizedBox(height: 25),
                   Center(
-                    child: ElevatedButton(
-                      style: ButtonStyle(minimumSize: MaterialStateProperty.all<Size>(const Size(100,50))),
+                    child: OutlinedButton(
+                      style: ButtonStyle(
+                          maximumSize: MaterialStateProperty.all<Size>(
+                              const Size(200,50))),
+                      // if the button is pressed it disable the button providing null to it
                       onPressed: !disableSubmitButton
                           ? () {
+                              _disableSubmitFn();
+
                               // Page is Starting from 0 to 9 total 10 questions
                               var page = _pageController.page?.round() ?? 1;
-
                               setState(() {
                                 animationCtrl.animateTo((page + 1) / 10);
                                 disableSubmitButton = true;
@@ -142,6 +150,7 @@ class _QuizViewState extends State<QuizView> {
                                 duration: const Duration(milliseconds: 500),
                                 curve: Curves.easeIn,
                               );
+
                               if (page >= 9) {
                                 debugPrint(quizAnswer.toString());
                                 var count = 0;
@@ -155,15 +164,17 @@ class _QuizViewState extends State<QuizView> {
                                   }
                                   index++;
                                 });
+                                // After we get the score, pop screen with the score value
                                 Navigator.pop<Map<String, dynamic>>(
-                                    context, {'score': count});
+                                  context,
+                                  {'score': count},
+                                );
                               }
-                              _disableSubmitFn();
                             }
                           : null,
                       child: !disableSubmitButton
                           ? const Text('submit & next')
-                          : const CircularProgressIndicator(
+                          : const LinearProgressIndicator(
                               color: Colors.white,
                             ),
                     ),
@@ -189,14 +200,10 @@ class _QuizViewState extends State<QuizView> {
   }
 
   _disableSubmitFn() {
-    Timer.periodic(const Duration(seconds: 1), (timer) {
-      debugPrint('Timer : ' + timer.tick.toString());
-      if (timer.tick == 1) {
-        setState(() {
-          disableSubmitButton = false;
-          timer.cancel();
-        });
-      }
+    Timer(const Duration(seconds: 1), () {
+      setState(() {
+        disableSubmitButton = false;
+      });
     });
   }
 

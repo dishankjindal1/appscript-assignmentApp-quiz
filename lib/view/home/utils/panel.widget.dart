@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:quiz/modal/modal.dart';
+import 'package:quiz/modal/repository.dart';
 import 'package:quiz/view/utils/utils.dart';
 import 'package:quiz/view_modal/view_modal.dart';
 
-class LoginLoggedScreen extends StatelessWidget {
-  const LoginLoggedScreen({Key? key, this.score = -1}) : super(key: key);
-
-  final int score;
+class PanelWidget extends StatelessWidget {
+  const PanelWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -16,14 +14,10 @@ class LoginLoggedScreen extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Spacer(),
-          // if score has some value then show score
-          score >= 0 ? Text('Your total score is $score') : const SizedBox(),
-          const SizedBox(height: 50),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              ElevatedButton(
+              OutlinedButton(
                 style: ButtonStyle(
                     minimumSize:
                         MaterialStateProperty.all<Size>(const Size(100, 50))),
@@ -39,19 +33,19 @@ class LoginLoggedScreen extends StatelessWidget {
                 },
                 child: const Text('Start Quiz'),
               ),
-              ElevatedButton(
+             const SizedBox(width: 50),
+              OutlinedButton(
                 style: ButtonStyle(
                     minimumSize:
                         MaterialStateProperty.all<Size>(const Size(100, 50))),
                 onPressed: () {
-                  context.read<LoginBloc>().add(LogoutRequestedEvent());
+                  context.read<LoginBloc>().add(LogoutEventRequested());
                   context.read<HistoryBloc>().add(HistoryClearRequested());
                 },
                 child: const Text('Sign out'),
               ),
             ],
           ),
-          const Spacer(),
         ],
       ),
     );
@@ -84,9 +78,7 @@ class LoginLoggedScreen extends StatelessWidget {
 
   _updateHistoryList(BuildContext context) async {
     // Looking to update on every screen pop
-    var historyList = await RepositoryProvider.of<CentralRepository>(context)
-        .getHistoryList();
-    context.read<HistoryBloc>().add(HistoryDataRequested(historyList));
+    context.read<HistoryBloc>().add(const HistoryDataRequested());
   }
 
   Future<bool?> _finalScorePopUp(

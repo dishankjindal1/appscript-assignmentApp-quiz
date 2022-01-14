@@ -1,3 +1,5 @@
+// ignore_for_file: unused_field
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
@@ -5,10 +7,30 @@ import 'package:quiz/modal/data/data.dart';
 import 'package:quiz/modal/utils/utils.dart';
 
 class HistoryServiceModal {
-  final _logger = Logger();
-  Future<List<HistoryDataModal>> getList(String uid) async {
-    _logger.i('getList called');
+  late final String _serverUrl;
+  late final Logger _logger;
+  late final FirebaseFirestore _firebaseFirestore;
 
+  HistoryServiceModal(String serverUrl,
+      [Logger? logger, FirebaseFirestore? firebaseFirestore]) {
+    if (Uri.parse(serverUrl).isAbsolute) {
+      _serverUrl = serverUrl;
+    } else {
+      throw InvalidServerUrlException();
+    }
+    if (logger == null) {
+      _logger = Logger();
+    } else {
+      _logger = logger;
+    }
+    if (firebaseFirestore == null) {
+      _firebaseFirestore = FirebaseFirestore.instance;
+    } else {
+      _firebaseFirestore = firebaseFirestore; //instance assigned
+    }
+  }
+
+  Future<List<HistoryDataModal>> getList(String uid) async {
     final historyRef = getCollection(uid);
 
     var queryHistoryList = await historyRef
@@ -34,21 +56,25 @@ class HistoryServiceModal {
 
     final historyRef = getCollection(uid);
     await historyRef
-        .add(
-          HistoryDataModal(score: score, timestamp: timestamp),
-        )
+        .add(HistoryDataModal(score: score, timestamp: timestamp))
         .then((value) => debugPrint('User Added'))
         .catchError((e) => throw FireStoreScoreUploadException(e));
   }
 
   CollectionReference<HistoryDataModal> getCollection(String uid) {
-    return FirebaseFirestore.instance
+    return _firebaseFirestore
         .collection('quiz')
         .doc('user-$uid')
         .collection('history')
         .withConverter<HistoryDataModal>(
-            fromFirestore: (snapshot, _) =>
-                HistoryDataModal.fromJson(snapshot.data()!),
+            fromFirestore: (snapshot, _) {
+              try {
+                return HistoryDataModal.fromJson(snapshot.data()!);
+              } catch (e) {
+                _logger.e("Error during fetching data :-" + e.toString());
+                throw FirebaseException(plugin: 'FirebaseFireStore error');
+              }
+            },
             toFirestore: (data, _) => data.toJson());
   }
 }

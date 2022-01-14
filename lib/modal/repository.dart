@@ -1,11 +1,35 @@
+export './data/data.dart';
+export './service/service.dart';
+export './utils/utils.dart';
+
+import './data/data.dart';
+import './service/service.dart';
+import './utils/utils.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:logger/logger.dart';
-import 'package:quiz/modal/modal.dart';
 
 class CentralRepository {
-  final QuestionServiceModal _questionServiceModal = QuestionServiceModal();
-  final HistoryServiceModal _historyServiceModal = HistoryServiceModal();
-  final Logger _logger = Logger();
+  late final QuestionServiceModal _questionServiceModal;
+  late final HistoryServiceModal _historyServiceModal;
+  late final FirebaseAuth _firebaseAuth;
+  late final Logger _logger;
+
+  CentralRepository({required String serverUrl}) {
+    _questionServiceModal = QuestionServiceModal(serverUrl);
+    _historyServiceModal = HistoryServiceModal(serverUrl);
+    _firebaseAuth = FirebaseAuth.instance;
+    _logger = Logger();
+  }
+
+  Future<User?> get firebaseUserAuth async {
+    return await _firebaseAuth.userChanges().distinct().where((event) {
+      if (event != null && event.emailVerified) {
+        return true;
+      }
+      return false;
+    }).first;
+  }
 
   Future<List<QuestionDataModal>> getQuestionList() async {
     return await _questionServiceModal.getList();
@@ -13,7 +37,7 @@ class CentralRepository {
 
   Future<List<HistoryDataModal>> getHistoryList() async {
     return await _historyServiceModal
-        .getList(FirebaseAuth.instance.currentUser?.uid ?? '123');
+        .getList(_firebaseAuth.currentUser?.uid ?? '123');
   }
 
   Future<void> uploadScores(String score) async {
@@ -29,4 +53,10 @@ class CentralRepository {
       _logger.e('Unknown Error: score not updated.');
     }
   }
+
+  Future<void> signout() async {
+    return await _firebaseAuth.signOut();
+  }
+
+  Future<void> signin() async {}
 }

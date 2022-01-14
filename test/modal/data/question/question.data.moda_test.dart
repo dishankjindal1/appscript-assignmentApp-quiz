@@ -1,7 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:quiz/modal/data/question/question.data.modal.dart';
-import 'package:quiz/modal/service/question/question.service.modal.dart';
 
 void main() {
   group('Testing: Question Data Modal', () {
@@ -10,7 +9,7 @@ void main() {
 
     setUp(() async {
       dio ??= Dio();
-      res = await dio!.get(serverUrl);
+      res = await dio!.get('serverUrl');
     });
 
     tearDown(() {

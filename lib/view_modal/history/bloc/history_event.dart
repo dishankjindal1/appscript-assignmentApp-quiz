@@ -8,8 +8,7 @@ abstract class HistoryEvent extends Equatable {
 }
 
 class HistoryDataRequested extends HistoryEvent {
-  final List<HistoryDataModal> list;
-  const HistoryDataRequested(this.list);
+  const HistoryDataRequested();
 }
 
 class HistoryClearRequested extends HistoryEvent {}

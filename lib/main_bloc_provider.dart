@@ -9,7 +9,9 @@ class MainBlocProvider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RepositoryProvider(
-      create: (_) => CentralRepository(),
+      create: (_) => CentralRepository(
+          serverUrl:
+              'https://opentdb.com/api.php?amount=10&category=27&type=multiple&encode=base64'),
       child: ViewMaterialApp(),
     );
   }

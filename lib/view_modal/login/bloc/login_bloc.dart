@@ -1,40 +1,36 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:quiz/modal/repository.dart';
 
 part 'login_event.dart';
 part 'login_state.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
-  LoginBloc()
-      : super(FirebaseAuth.instance.currentUser == null
-            ? LoginInitial()
-            : LoginSuccess(
-                FirebaseAuth.instance.currentUser?.displayName ?? 'Error')) {
-    on<LoginRequestedEvent>(_loginRequested);
-    on<LogoutRequestedEvent>(_logoutRequested);
+  final CentralRepository _centralRepository;
+
+  LoginBloc(this._centralRepository) : super(LoginInitial()) {
+    on<LoginEventRequested>(_loginRequested);
+    on<LogoutEventRequested>(_logoutRequested);
     on<LoginScoreRequestedEvent>(_loginScoreRequested);
   }
-  _loginRequested(LoginRequestedEvent event, Emitter<LoginState> emit) async {
-    emit(LLoading());
-    var userName =
-        FirebaseAuth.instance.currentUser?.displayName ?? 'Error in username';
-    await Future.delayed(const Duration(seconds: 1));
-    emit(LoginSuccess(userName));
+
+  _loginRequested(LoginEventRequested event, Emitter<LoginState> emit) async {
+    emit(LoadingState());
+
+    await _centralRepository.firebaseUserAuth.then((value) => value);
+
+    emit(LoginSuccess());
   }
 
-  _logoutRequested(LogoutRequestedEvent event, Emitter<LoginState> emit) async {
-    emit(LLoading());
-
-    await FirebaseAuth.instance.signOut();
-    await Future.delayed(const Duration(seconds: 1));
-
+  _logoutRequested(LogoutEventRequested event, Emitter<LoginState> emit) async {
+    emit(LoadingState());
+    await _centralRepository.signout();
     emit(LogoutSuccess());
   }
 
   _loginScoreRequested(
       LoginScoreRequestedEvent event, Emitter<LoginState> emit) async {
-    emit(LLoading());
+    emit(LoadingState());
     var finalScore = event.score;
     emit(LoginSuccessScore(finalScore));
   }
